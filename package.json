@@ -1,0 +1,22 @@
+{
+  "name": "earthquakes",
+  "version": "0.1.0",
+  "description": "Single page app consuming data from http://www.geonames.org/ earthquake's API. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/raulnabarret/Earthquakes.git"
+  },
+  "author": "Raúl Nabarret",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raulnabarret/Earthquakes/issues"
+  },
+  "homepage": "https://github.com/raulnabarret/Earthquakes#readme",
+  "dependencies": {
+    "materialize-css": "^0.97.8"
+  }
+}
