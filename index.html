@@ -9,11 +9,99 @@
     <!--Meta Viewport-->
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 </head>
+
 <body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+                <h1 class="center-align">Earthquakes</h1>
+                <h5 class="center-align">Powered by GeoNames</h5>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div>
+                <input id="search-input" type="text">
+            </div>
+        </div>
+        <div class="row center-align">
+            <button id="submit-btn" class="btn waves-effect waves-light white" onclick="searchCity()">
+                <span class="teal-text lighten-2">Submit</span>
+            </button>
+        </div>
+    </div>
+    <div id="table-container" class="container">
+        <table id="earthquakes-table" class="centered responsive-table">
+            <thead>
+                <tr>
+                    <th data-field="id">Rank</th>
+                    <th data-field="lat">Lat</th>
+                    <th data-field="lng">Long</th>
+                    <th data-field="magn">Magnitude</th>
+                    <th data-field="date">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <!--jQuery-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!-- Materialize.js -->
     <script type="text/javascript" src="src/materialize-css/js/materialize.js"></script>
+    <script>
+    // Global variables used to store bounding box coordinates
+    var $north
+    var $south
+    var $east
+    var $west
+
+    // Function that allows to search by city and retrieves the coordinates of its bounding box using Google Maps API
+    function searchCity() {
+        // Variable that stores the name of the city searched
+        var $city = $('#search-input').val()
+        // Async call to API using AJAX
+        $.ajax({
+                // Google Maps API
+                url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + $city + '&sensor=false'
+
+            })
+            .done(function(data) {
+                // Lat and lng is stored in each of the four points
+                $north = data['results'][0]['geometry']['bounds']['northeast']['lat']
+                $south = data['results'][0]['geometry']['bounds']['northeast']['lng']
+                $east = data['results'][0]['geometry']['bounds']['southwest']['lat']
+                $west = data['results'][0]['geometry']['bounds']['southwest']['lng']
+
+                // Call to displayTable function
+                displayTable()
+
+            })
+    }
+    
+    // Function that displays a table with the info of earthquakes for the city searched using GeoNames EarthQuakes API
+    function displayTable() {
+        // Async call to API using AJAX
+        $.ajax({
+                // GeoNames EarthQuakes API
+                url: 'http://api.geonames.org/earthquakesJSON?north=' + $north + '&south=' + $south + '&east=' + $east + '&west=' + $west + '&date=2016-09-09&username=raulnabarret',
+            })
+            .done(function(data) {
+
+                // Displays top 10 earthquakes for each city: Rank, Latitude, Longitude, Magnitude and Date
+                for (var i = 0; i < 10; i++) {
+                    var rank = i + 1
+                    $('#earthquakes-table').append(
+                        '<tr><td>' + rank + '</td><td>' 
+                        + data['earthquakes'][i]['lat'] + '</td><td>' 
+                        + data['earthquakes'][i]['lng'] + '</td><td>' 
+                        + data['earthquakes'][i]['magnitude'] + '</td><td>' 
+                        + data['earthquakes'][i]['datetime'] + '</td><td></td><tr>')
+                }
+            })
+    }
+    </script>
 </body>
 
 </html>
