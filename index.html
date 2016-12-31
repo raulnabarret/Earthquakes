@@ -11,43 +11,82 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <h1 class="center-align">Earthquakes</h1>
-                <h5 class="center-align">Powered by GeoNames</h5>
+    <div class="row">
+        <div class="col s12 m12 l12">
+            <div class="container">
+                <div class="row">
+                    <div class="col s12">
+                        <h1 class="center-align teal-text text-darken-4">Earthquakes</h1>
+                        <h4 class="center-align teal-text text-darken-2">Powered by GeoNames</h4>
+                    </div>
+                </div>
+            </div>
+            <div id="search-container" class="section">
+                <div class="container">
+                    <div class="row">
+                        <div class="center-align">
+                            <h5>Search for Earthquakes</h5>
+                            <p>Enter a city name to display the top 10 earthquakes in that location sorted by magnitude</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <input id="search-input" type="text">
+                        </div>
+                    </div>
+                    <div class="row center-align">
+                        <button id="submit-btn" class="btn waves-effect waves-light white" onclick="searchCity()">
+                            <span class="teal-text lighten-2">Submit</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="container">
+                    <table id="earthquakes-table" class="centered responsive-table hide">
+                        <thead>
+                            <tr>
+                                <th data-field="id">Rank</th>
+                                <th data-field="lat">Lat</th>
+                                <th data-field="lng">Long</th>
+                                <th data-field="magn">Magnitude</th>
+                                <th data-field="date">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="ranking-container" class="section">
+                <div class="container">
+                    <div class="row">
+                        <div class="center-align">
+                            <h5>Top 10 Worldwide</h5>
+                            <p>A list of the top 10 largest earthquakes in the world for the last 12 months sorted by date</p>
+                        </div>
+                    </div>
+                    <div class="top-earthquakes-table">
+                        <table id="top-earthquakes-table" class="centered responsive-table">
+                            <thead>
+                                <tr>
+                                    <th data-field="id">#</th>
+                                    <th data-field="date">Date</th>
+                                    <th data-field="magn">Magnitude</th>
+                                    <th data-field="lat">Lat</th>
+                                    <th data-field="lng">Long</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div>
-                <input id="search-input" type="text">
-            </div>
-        </div>
-        <div class="row center-align">
-            <button id="submit-btn" class="btn waves-effect waves-light white" onclick="searchCity()">
-                <span class="teal-text lighten-2">Submit</span>
-            </button>
-        </div>
-    </div>
-    <div id="table-container" class="container">
-        <table id="earthquakes-table" class="centered responsive-table">
-            <thead>
-                <tr>
-                    <th data-field="id">Rank</th>
-                    <th data-field="lat">Lat</th>
-                    <th data-field="lng">Long</th>
-                    <th data-field="magn">Magnitude</th>
-                    <th data-field="date">Date</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
     </div>
     <!--jQuery-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- Index.js -->
+    <script type="text/javascript" src="src/js/index.js"></script>
     <!-- Materialize.js -->
     <script type="text/javascript" src="src/materialize-css/js/materialize.js"></script>
     <script>
@@ -61,7 +100,7 @@
     function searchCity() {
         // Variable that stores the name of the city searched
         var $city = $('#search-input').val()
-        // Async call to API using AJAX
+            // Async call to API using AJAX
         $.ajax({
                 // Google Maps API
                 url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + $city + '&sensor=false'
@@ -79,7 +118,7 @@
 
             })
     }
-    
+
     // Function that displays a table with the info of earthquakes for the city searched using GeoNames EarthQuakes API
     function displayTable() {
         // Async call to API using AJAX
@@ -89,18 +128,44 @@
             })
             .done(function(data) {
 
+                $('#earthquakes-table tbody tr').remove()
+                $('#earthquakes-table').removeClass('hide')
+                $('#earthquakes-table').addClass('show')
+                
                 // Displays top 10 earthquakes for each city: Rank, Latitude, Longitude, Magnitude and Date
                 for (var i = 0; i < 10; i++) {
                     var rank = i + 1
                     $('#earthquakes-table').append(
-                        '<tr><td>' + rank + '</td><td>' 
-                        + data['earthquakes'][i]['lat'] + '</td><td>' 
-                        + data['earthquakes'][i]['lng'] + '</td><td>' 
-                        + data['earthquakes'][i]['magnitude'] + '</td><td>' 
-                        + data['earthquakes'][i]['datetime'] + '</td><td></td><tr>')
+                        '<tr><td>' + rank + '</td><td>' + data['earthquakes'][i]['lat'] + '</td><td>' + data['earthquakes'][i]['lng'] + '</td><td>' + data['earthquakes'][i]['magnitude'] + '</td><td>' + data['earthquakes'][i]['datetime'].substring(0, 10) + '</td><td></td><tr>')
                 }
             })
     }
+
+    // New object Date
+    var date = new Date()
+    // Retrieves the number of day in the month
+    var day = date.getDate()
+    // Retrieves the number of the month
+    var month = date.getMonth()+1
+    // Retrieves the year
+    var year = date.getFullYear()
+    // String with today's date
+    var today = year + '-' + day + '-' + month
+
+    // Async call to API using AJAX
+    $.ajax({
+        // GeoNames EarthQuakes API
+        url: 'http://api.geonames.org/earthquakesJSON?north=90&south=-90&east=180&west=-180&date='+today+'&minMagnitude=7.2&username=raulnabarret',
+    }).done(function(data) {
+
+        // Displays top 10 earthquakes worldwide: Rank, Date, Magnitude, Latitude, Longitude, 
+        for (var j = 0; j < 10; j++) {
+            var rank = j + 1
+            $('#top-earthquakes-table').append(
+                '<tr><td>' + rank + '</td><td>' + data['earthquakes'][j]['datetime'].substring(0, 10) + '</td><td>' + data['earthquakes'][j]['magnitude'] + '</td><td>' + data['earthquakes'][j]['lat'] + '</td><td>' + data['earthquakes'][j]['lng'] + '</td><td></td><tr>')
+
+        }
+    })
     </script>
 </body>
 
